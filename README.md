@@ -31,7 +31,7 @@ Los modelos usan demanda pasada y calendario. No incorporan clima, vuelos, demor
 ## Inicio rápido desde un clon limpio
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/DSRoCCO/NYC_Yellow_taxi_mvp.git
 cd nyc_yellow_taxi_mvp
 Rscript -e 'renv::restore(prompt = FALSE)'
 R CMD INSTALL .
@@ -104,7 +104,7 @@ El workflow [publish-analysis.yml](.github/workflows/publish-analysis.yml) rende
 Después del primer push, habilite **Settings → Pages → Build and deployment → Source: GitHub Actions** en el repositorio. La URL resultante será:
 
 ```text
-https://<OWNER>.github.io/<REPOSITORY>/
+https://dsrocco.github.io/NYC_Yellow_taxi_mvp/
 ```
 
 ## Estructura relevante
