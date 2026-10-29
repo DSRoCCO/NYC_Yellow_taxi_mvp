@@ -23,7 +23,13 @@ source("renv/activate.R")
 library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales); library(DBI); library(duckdb)
 if (knitr::is_latex_output()) {
   options(width = 75, pillar.width = 75)
-  knitr::opts_chunk$set(echo = FALSE)
+  knitr::opts_chunk$set(
+    echo = FALSE,
+    warning = FALSE,
+    message = FALSE,
+    dev = "png",
+    dpi = 220
+  )
 }
 quality <- read_csv("reports/data_quality_by_source_month.csv", show_col_types = FALSE)
 monthly <- read_csv("reports/monthly_city_profile.csv", show_col_types = FALSE)
@@ -126,7 +132,7 @@ El mapa de calor resume la estacionalidad semanal promedio. Es útil para descri
 Esta sección no parte de una respuesta esperada. Explora concentración espacial, cambios de estabilidad por año, trayectos frecuentes y relaciones entre volumen, distancia, duración, tarifas y propinas. Cada hallazgo se registrará como descripción, asociación, hipótesis o inconcluso; ningún patrón se presentará como explicación causal.
 
 ```{r}
-zone_regime |> group_by(pickup_zone, Zone) |> summarise(trips = sum(trips), .groups = "drop") |> slice_max(trips, n = 15) |> ggplot(aes(reorder(Zone, trips), trips)) + geom_col(fill = "#56B4E9") + coord_flip() + scale_y_continuous(labels = label_number()) + labs(x = "Zona de recogida TLC", y = "Viajes acumulados", title = "Concentración de demanda: 15 zonas principales") + theme_minimal()
+zone_regime |> group_by(pickup_zone, Zone) |> summarise(trips = sum(trips), .groups = "drop") |> slice_max(trips, n = 15) |> ggplot(aes(reorder(Zone, trips), trips)) + geom_col(fill = "#56B4E9") + coord_flip() + scale_y_continuous(labels = label_number()) + labs(x = "Zona de recogida TLC", y = "Viajes acumulados", title = "15 zonas con más viajes") + theme_minimal()
 ```
 
 La demanda está concentrada espacialmente, aunque el ranking acumulado oculta cambios importantes entre períodos. La comparación por régimen que sigue evita convertir esa agregación histórica en una clasificación permanente de zonas.
