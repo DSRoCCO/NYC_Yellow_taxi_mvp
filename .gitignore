@@ -1,0 +1,36 @@
+# Datos pesados y derivados: se reconstruyen localmente, no se versionan.
+# Se mantienen el manifiesto, el catálogo de zonas y la documentación de la
+# fuente para permitir la descarga y validación reproducibles.
+data/raw/nyc_tlc_yellow_2019_2024/*.parquet
+data/interim/
+data/processed/
+
+# Detalle fila a fila regenerable de la validación predictiva; el repositorio
+# conserva métricas, segmentos, contrato, gate y hallazgos agregados.
+reports/predictive_validation_rows.csv
+
+# Se conserva sólo una muestra explícitamente aprobada si se crea.
+data/sample/*.parquet
+data/sample/*.csv
+proyecto anterior/
+
+# Instrucciones de trabajo locales; no forman parte del producto publicado.
+skills/
+docs/
+
+# Estado local de R / renv.
+renv/library/
+renv/staging/
+.renv-cache/
+.venv-jupyter/
+
+# Productos de renderizado y sesiones locales.
+notebooks/*.html
+notebooks/*_files/
+.quarto/
+.Rhistory
+.RData
+.Ruserdata
+
+# Configuración local de DVC, si se adopta en el futuro.
+.dvc/config.local

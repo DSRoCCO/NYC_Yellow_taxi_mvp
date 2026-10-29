@@ -1,0 +1,7 @@
+question,population,method,evidence_type,status,decision
+¿La cobertura fuente es trazable y apta?,72 Parquet oficiales,"manifiesto, bytes, SHA-256, esquema y auditoria de duplicados",descriptiva,completada,continuar
+¿Como cambia la demanda en el tiempo?,viajes con mes fuente coherente,"perfil mensual, horario y semanal",descriptiva,completada,continuar
+¿Como cambia la geografia observada?,zonas y rutas TLC validas,concentracion por zona/ruta/regimen; persistencia de top-10,descriptiva,completada,continuar
+¿Que relaciones economicas aparecen?,viajes analiticos,distribuciones y correlaciones crudas vs. acotadas por regimen,asociativa,inconclusa - pendiente diagnostico de extremos,fare_tip cruda post-2021 anomala; usar vista acotada; conclusion economica: inconclusa
+¿Se puede pronosticar demanda?,ciudad y zonas principales post-2021,validacion temporal y baselines,predictiva,aprobada con limites,lag_calendar fue seleccionado y validado en todas las series evaluadas. El resultado es apto para un componente de pronostico historico sujeto a monitoreo y reentrenamiento. No identifica efectos causales ni justifica recomendaciones operativas.
+¿Se pueden recomendar incentivos o capacidad?,no observable,evaluacion de variables disponibles,inconclusa,cerrada,no apta sin datos operativos

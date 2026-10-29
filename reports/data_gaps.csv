@@ -1,0 +1,8 @@
+question_today_unanswerable,data_needed,why_needed
+Cuantos conductores/vehiculos operaban en cada zona y hora?,Registros de turnos de conductores o vehiculos activos (TLC),Sin oferta no se puede distinguir caida de demanda de caida de disponibilidad
+Cual es el efecto de un cambio de tarifa sobre la demanda?,Precios historicos por regimen tarifario y evento de cambio,Sin variacion exogena en precios no se puede estimar elasticidad
+Como afectan los incentivos a conductores al volumen?,"Incentivos pagados por periodo, zona y conductor",Sin la variable de intervencion no se puede medir su efecto
+Que rol juegan el clima y los eventos sobre la demanda?,Datos horarios de clima y calendario de eventos NYC,La demanda tiene componentes meteorologicos no capturados por el calendario
+Cuantos vuelos llegan al JFK/LGA/EWR?,Datos de trafico aereo horario por aeropuerto,La demanda en zonas aeroportuarias depende del trafico aereo
+Cuales son los costes operativos del conductor?,"Datos de combustible, mantenimiento, alquiler de medallon y seguros",Sin costes no se puede calcular rentabilidad ni justificar recomendaciones de flota
+Que paso con los conductores que abandonaron durante la pandemia?,Datos de retencion/churn de conductores TLC,"La recuperacion post-pandemia puede estar limitada por oferta, no solo por demanda"

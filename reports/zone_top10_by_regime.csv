@@ -1,0 +1,31 @@
+regime,pickup_zone,Zone,Borough,trips
+2020_2021,237,Upper East Side South,Manhattan,2698880
+2020_2021,236,Upper East Side North,Manhattan,2514112
+2020_2021,161,Midtown Center,Manhattan,2038093
+2020_2021,186,Penn Station/Madison Sq West,Manhattan,1881860
+2020_2021,162,Midtown East,Manhattan,1786412
+2020_2021,142,Lincoln Square East,Manhattan,1737036
+2020_2021,170,Murray Hill,Manhattan,1722272
+2020_2021,132,JFK Airport,Queens,1655298
+2020_2021,239,Upper West Side South,Manhattan,1636427
+2020_2021,48,Clinton East,Manhattan,1610719
+post_2021,132,JFK Airport,Queens,5897458
+post_2021,237,Upper East Side South,Manhattan,5566140
+post_2021,161,Midtown Center,Manhattan,5253565
+post_2021,236,Upper East Side North,Manhattan,4982564
+post_2021,162,Midtown East,Manhattan,4064527
+post_2021,186,Penn Station/Madison Sq West,Manhattan,3961211
+post_2021,230,Times Sq/Theatre District,Manhattan,3882241
+post_2021,142,Lincoln Square East,Manhattan,3867404
+post_2021,138,LaGuardia Airport,Queens,3689075
+post_2021,170,Murray Hill,Manhattan,3522084
+pre_2020,237,Upper East Side South,Manhattan,3643530
+pre_2020,161,Midtown Center,Manhattan,3452905
+pre_2020,236,Upper East Side North,Manhattan,3293333
+pre_2020,162,Midtown East,Manhattan,3048540
+pre_2020,186,Penn Station/Madison Sq West,Manhattan,3029324
+pre_2020,230,Times Sq/Theatre District,Manhattan,2903256
+pre_2020,132,JFK Airport,Queens,2729619
+pre_2020,48,Clinton East,Manhattan,2681196
+pre_2020,170,Murray Hill,Manhattan,2607611
+pre_2020,234,Union Sq,Manhattan,2536410

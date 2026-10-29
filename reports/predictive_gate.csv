@@ -1,0 +1,12 @@
+series,best_rmse,selected_model,all_horizons_have_metrics,any_rmse_na,any_na_predictions,gate,test_cut_epoch
+city,196.57757865419566,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_132,9.81400304149703,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_138,1.6228007319626276,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_142,2.9153404131493295,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_161,5.320079446065916,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_162,3.81217192308863,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_170,5.217408867842943,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_186,8.055969001927718,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_230,11.212935705929501,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_236,2.0162043051635634,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000
+zone_237,3.6751706736802254,lag_calendar,TRUE,FALSE,FALSE,forecast_candidate_approved,1726218000

@@ -1,0 +1,91 @@
+regime,pickup_zone,dropoff_zone,trips,pickup_borough,pickup_name,dropoff_borough,dropoff_name
+2020_2021,237,236,399412,Manhattan,Upper East Side South,Manhattan,Upper East Side North
+2020_2021,236,237,341936,Manhattan,Upper East Side North,Manhattan,Upper East Side South
+2020_2021,236,236,293312,Manhattan,Upper East Side North,Manhattan,Upper East Side North
+2020_2021,237,237,279437,Manhattan,Upper East Side South,Manhattan,Upper East Side South
+2020_2021,264,264,217166,Unknown,N/A,Unknown,N/A
+2020_2021,239,238,164770,Manhattan,Upper West Side South,Manhattan,Upper West Side North
+2020_2021,239,142,155390,Manhattan,Upper West Side South,Manhattan,Lincoln Square East
+2020_2021,141,236,153595,Manhattan,Lenox Hill West,Manhattan,Upper East Side North
+2020_2021,142,239,145789,Manhattan,Lincoln Square East,Manhattan,Upper West Side South
+2020_2021,237,161,142907,Manhattan,Upper East Side South,Manhattan,Midtown Center
+2020_2021,238,239,141463,Manhattan,Upper West Side North,Manhattan,Upper West Side South
+2020_2021,161,237,139547,Manhattan,Midtown Center,Manhattan,Upper East Side South
+2020_2021,237,162,134510,Manhattan,Upper East Side South,Manhattan,Midtown East
+2020_2021,263,141,133614,Manhattan,Yorkville West,Manhattan,Lenox Hill West
+2020_2021,236,141,127750,Manhattan,Upper East Side North,Manhattan,Lenox Hill West
+2020_2021,237,141,127490,Manhattan,Upper East Side South,Manhattan,Lenox Hill West
+2020_2021,263,236,126836,Manhattan,Yorkville West,Manhattan,Upper East Side North
+2020_2021,141,237,123604,Manhattan,Lenox Hill West,Manhattan,Upper East Side South
+2020_2021,161,236,123040,Manhattan,Midtown Center,Manhattan,Upper East Side North
+2020_2021,239,239,117976,Manhattan,Upper West Side South,Manhattan,Upper West Side South
+2020_2021,142,238,116836,Manhattan,Lincoln Square East,Manhattan,Upper West Side North
+2020_2021,236,75,112196,Manhattan,Upper East Side North,Manhattan,East Harlem South
+2020_2021,236,239,112185,Manhattan,Upper East Side North,Manhattan,Upper West Side South
+2020_2021,186,161,111718,Manhattan,Penn Station/Madison Sq West,Manhattan,Midtown Center
+2020_2021,236,161,110536,Manhattan,Upper East Side North,Manhattan,Midtown Center
+2020_2021,237,263,110240,Manhattan,Upper East Side South,Manhattan,Yorkville West
+2020_2021,48,68,109526,Manhattan,Clinton East,Manhattan,East Chelsea
+2020_2021,236,238,108925,Manhattan,Upper East Side North,Manhattan,Upper West Side North
+2020_2021,141,141,107972,Manhattan,Lenox Hill West,Manhattan,Lenox Hill West
+2020_2021,236,162,107154,Manhattan,Upper East Side North,Manhattan,Midtown East
+post_2021,237,236,797156,Manhattan,Upper East Side South,Manhattan,Upper East Side North
+post_2021,236,237,682009,Manhattan,Upper East Side North,Manhattan,Upper East Side South
+post_2021,264,264,559221,Unknown,N/A,Unknown,N/A
+post_2021,237,237,550677,Manhattan,Upper East Side South,Manhattan,Upper East Side South
+post_2021,236,236,529774,Manhattan,Upper East Side North,Manhattan,Upper East Side North
+post_2021,161,237,356491,Manhattan,Midtown Center,Manhattan,Upper East Side South
+post_2021,237,161,349331,Manhattan,Upper East Side South,Manhattan,Midtown Center
+post_2021,161,236,306592,Manhattan,Midtown Center,Manhattan,Upper East Side North
+post_2021,142,239,302717,Manhattan,Lincoln Square East,Manhattan,Upper West Side South
+post_2021,239,142,298577,Manhattan,Upper West Side South,Manhattan,Lincoln Square East
+post_2021,132,132,295014,Queens,JFK Airport,Queens,JFK Airport
+post_2021,237,162,289945,Manhattan,Upper East Side South,Manhattan,Midtown East
+post_2021,239,238,287769,Manhattan,Upper West Side South,Manhattan,Upper West Side North
+post_2021,141,236,269530,Manhattan,Lenox Hill West,Manhattan,Upper East Side North
+post_2021,236,161,269245,Manhattan,Upper East Side North,Manhattan,Midtown Center
+post_2021,132,230,267764,Queens,JFK Airport,Manhattan,Times Sq/Theatre District
+post_2021,238,239,244014,Manhattan,Upper West Side North,Manhattan,Upper West Side South
+post_2021,186,230,241872,Manhattan,Penn Station/Madison Sq West,Manhattan,Times Sq/Theatre District
+post_2021,162,237,240136,Manhattan,Midtown East,Manhattan,Upper East Side South
+post_2021,236,141,238874,Manhattan,Upper East Side North,Manhattan,Lenox Hill West
+post_2021,142,238,238155,Manhattan,Lincoln Square East,Manhattan,Upper West Side North
+post_2021,236,239,235017,Manhattan,Upper East Side North,Manhattan,Upper West Side South
+post_2021,237,141,233964,Manhattan,Upper East Side South,Manhattan,Lenox Hill West
+post_2021,186,161,229374,Manhattan,Penn Station/Madison Sq West,Manhattan,Midtown Center
+post_2021,48,68,225440,Manhattan,Clinton East,Manhattan,East Chelsea
+post_2021,263,141,223937,Manhattan,Yorkville West,Manhattan,Lenox Hill West
+post_2021,142,237,222838,Manhattan,Lincoln Square East,Manhattan,Upper East Side South
+post_2021,138,230,221767,Queens,LaGuardia Airport,Manhattan,Times Sq/Theatre District
+post_2021,161,161,221315,Manhattan,Midtown Center,Manhattan,Midtown Center
+post_2021,237,142,219737,Manhattan,Upper East Side South,Manhattan,Lincoln Square East
+pre_2020,264,264,594151,Unknown,N/A,Unknown,N/A
+pre_2020,237,236,536635,Manhattan,Upper East Side South,Manhattan,Upper East Side North
+pre_2020,236,237,455962,Manhattan,Upper East Side North,Manhattan,Upper East Side South
+pre_2020,236,236,451851,Manhattan,Upper East Side North,Manhattan,Upper East Side North
+pre_2020,237,237,435102,Manhattan,Upper East Side South,Manhattan,Upper East Side South
+pre_2020,239,238,236747,Manhattan,Upper West Side South,Manhattan,Upper West Side North
+pre_2020,239,142,231152,Manhattan,Upper West Side South,Manhattan,Lincoln Square East
+pre_2020,237,162,225211,Manhattan,Upper East Side South,Manhattan,Midtown East
+pre_2020,237,161,219067,Manhattan,Upper East Side South,Manhattan,Midtown Center
+pre_2020,142,239,218533,Manhattan,Lincoln Square East,Manhattan,Upper West Side South
+pre_2020,161,237,217222,Manhattan,Midtown Center,Manhattan,Upper East Side South
+pre_2020,238,239,207998,Manhattan,Upper West Side North,Manhattan,Upper West Side South
+pre_2020,186,230,204685,Manhattan,Penn Station/Madison Sq West,Manhattan,Times Sq/Theatre District
+pre_2020,186,161,197248,Manhattan,Penn Station/Madison Sq West,Manhattan,Midtown Center
+pre_2020,141,236,197011,Manhattan,Lenox Hill West,Manhattan,Upper East Side North
+pre_2020,48,48,192745,Manhattan,Clinton East,Manhattan,Clinton East
+pre_2020,230,186,186220,Manhattan,Times Sq/Theatre District,Manhattan,Penn Station/Madison Sq West
+pre_2020,237,141,184121,Manhattan,Upper East Side South,Manhattan,Lenox Hill West
+pre_2020,239,239,180718,Manhattan,Upper West Side South,Manhattan,Upper West Side South
+pre_2020,161,161,180164,Manhattan,Midtown Center,Manhattan,Midtown Center
+pre_2020,141,237,179372,Manhattan,Lenox Hill West,Manhattan,Upper East Side South
+pre_2020,263,236,179114,Manhattan,Yorkville West,Manhattan,Upper East Side North
+pre_2020,48,68,173086,Manhattan,Clinton East,Manhattan,East Chelsea
+pre_2020,234,170,167703,Manhattan,Union Sq,Manhattan,Murray Hill
+pre_2020,161,236,167335,Manhattan,Midtown Center,Manhattan,Upper East Side North
+pre_2020,236,141,167244,Manhattan,Upper East Side North,Manhattan,Lenox Hill West
+pre_2020,263,141,162178,Manhattan,Yorkville West,Manhattan,Lenox Hill West
+pre_2020,162,170,161887,Manhattan,Midtown East,Manhattan,Murray Hill
+pre_2020,186,170,160256,Manhattan,Penn Station/Madison Sq West,Manhattan,Murray Hill
+pre_2020,107,170,160017,Manhattan,Gramercy,Manhattan,Murray Hill

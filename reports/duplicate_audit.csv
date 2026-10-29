@@ -1,0 +1,2 @@
+total_trips,approx_duplicate_trips,approx_unique_trips,signature_definition
+259287888,66197,259221691,pickup_datetime|dropoff_datetime|PULocationID|DOLocationID|total_amount (2 dec.). Sin trip_id único; la firma es aproximación. Duplicados pueden ser errores TLC o viajes genuinamente idénticos.

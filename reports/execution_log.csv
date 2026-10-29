@@ -1,0 +1,2 @@
+script,run_utc,r_version,duckdb_version,parquet_files,total_hours,elapsed_sec,renv_lock_sha256
+build_foundation.R,2026-10-29 16:48:31 UTC,R version 4.3.3 (2024-02-29),2.0.0,72,52602,92.2,9dd70697ff13b064dffa183089654132d0dcc2b56da79980db189b48c592c132

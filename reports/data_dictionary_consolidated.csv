@@ -1,0 +1,21 @@
+field,observed_type,unit_or_domain,analytical_role,availability,notes
+VendorID,BIGINT,id proveedor,categoria,todos los periodos,sin ID unico de viaje
+tpep_pickup_datetime,TIMESTAMP,pickup datetime local,tiempo/target,todos los periodos,debe coincidir con periodo fuente
+tpep_dropoff_datetime,TIMESTAMP,dropoff datetime local,tiempo,todos los periodos,duracion derivada
+passenger_count,DOUBLE,pasajeros declarados,medida,todos los periodos,puede contener 0 o NA
+trip_distance,DOUBLE,millas,medida,todos los periodos,negativos se auditan
+RatecodeID,DOUBLE,codigo TLC tarifa,categoria,todos los periodos,dominio TLC
+store_and_fwd_flag,VARCHAR,indicador Y/N,categoria,todos los periodos,campo historico
+PULocationID,BIGINT,ID TLC zona,clave geografica,todos los periodos,unir a taxi_zone_lookup
+DOLocationID,BIGINT,ID TLC zona,clave geografica,todos los periodos,unir a taxi_zone_lookup
+payment_type,BIGINT,codigo TLC pago,categoria,todos los periodos,dominio TLC
+fare_amount,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+extra,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+mta_tax,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+tip_amount,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+tolls_amount,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+improvement_surcharge,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+total_amount,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+congestion_surcharge,DOUBLE,USD,medida monetaria,todos los periodos,no interpretar como coste operativo
+airport_fee,DOUBLE,USD,medida monetaria,no disponible en todos los periodos,no interpretar como coste operativo
+filename,VARCHAR,ruta local de archivo,trazabilidad,generado al leer,no pertenece a la fuente original

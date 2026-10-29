@@ -1,0 +1,225 @@
+---
+title: "Análisis integral — NYC Yellow Taxi"
+subtitle: "Viajes Yellow Taxi publicados por NYC TLC, 2019–2024"
+execute-dir: project
+format:
+  html:
+    toc: true
+    toc-location: left
+    code-fold: true
+execute:
+  freeze: auto
+---
+
+```{r}
+#| label: setup
+#| include: false
+setwd(normalizePath(".."))
+source("renv/activate.R")
+library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales)
+quality <- read_csv("reports/data_quality_by_source_month.csv", show_col_types = FALSE)
+monthly <- read_csv("reports/monthly_city_profile.csv", show_col_types = FALSE)
+hour_weekday <- read_csv("reports/hour_weekday_profile.csv", show_col_types = FALSE)
+zone_regime <- read_csv("reports/zone_regime_profile.csv", show_col_types = FALSE)
+routes <- read_csv("reports/top_routes_by_regime.csv", show_col_types = FALSE)
+economic <- read_csv("reports/economic_distribution_by_regime.csv", show_col_types = FALSE)
+payment <- read_csv("reports/payment_profile_by_regime.csv", show_col_types = FALSE)
+evidence <- read_csv("reports/evidence_matrix.csv", show_col_types = FALSE)
+predictive_gate <- read_csv("reports/predictive_gate.csv", show_col_types = FALSE)
+predictive_metrics <- read_csv("reports/predictive_metrics.csv", show_col_types = FALSE)
+findings <- read_csv("reports/findings_register.csv", show_col_types = FALSE)
+branch_decisions <- read_csv("reports/branch_decisions.csv", show_col_types = FALSE)
+data_gaps <- read_csv("reports/data_gaps.csv", show_col_types = FALSE)
+predictive_partition <- read_csv("reports/predictive_partition.csv", show_col_types = FALSE)
+```
+
+## Propósito, alcance y etiqueta de evidencia
+
+Este documento estudia los viajes Yellow Taxi publicados por NYC TLC entre 2019 y 2024. Distingue evidencia **descriptiva**, asociaciones, resultados **predictivos** y escenarios condicionados. No identifica causalidad ni estima el efecto de políticas, conductores, precios o incentivos.
+
+La fuente cruda consta de 72 Parquet mensuales. El manifiesto y las reglas de inmutabilidad se encuentran en `data/raw/nyc_tlc_yellow_2019_2024/`. El informe consume los reportes de evidencia congelada en `reports/`, por lo que no requiere scripts auxiliares ni datos intermedios para renderizarse.
+
+El documento consume artefactos previamente generados y validados. Esto separa el análisis de la presentación: no se releen los datos crudos durante la renderización y cada cifra puede rastrearse al script que la produjo.
+
+## Intake, diccionario y trazabilidad
+
+La unidad observada es un viaje publicado por TLC. Los campos se han perfilado en `reports/observed_schema.csv`; las diferencias de esquema entre períodos se preservan mediante lectura Parquet con unión por nombre. El catálogo de zonas es el archivo oficial `taxi_zone_lookup.csv`.
+
+La cobertura se limita a viajes Yellow Taxi publicados, no a todos los desplazamientos de Nueva York. Las zonas se interpretan con el catálogo TLC y los cambios de esquema entre meses se tratan como una condición de la fuente, no como una señal de comportamiento.
+
+## Análisis diagnóstico: calidad, cobertura y límites de la fuente
+
+```{r}
+quality |> summarise(across(c(trips, missing_pickup, timestamp_outside_source_period, negative_distance, negative_duration, negative_total), sum, na.rm = TRUE))
+```
+
+La tabla anterior presenta los controles antes de aplicar filtros analíticos. En particular, los registros cuyo timestamp no coincide con el mes declarado por el archivo permanecen contabilizados en la auditoría; se excluyen únicamente de las series temporales para que no desplacen artificialmente la demanda entre períodos.
+
+```{r}
+ggplot(quality, aes(x = as.Date(paste0(source_period, "-01")), y = trips)) + geom_line(color = "#0072B2") + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes publicados", title = "Cobertura mensual por período fuente") + theme_minimal()
+```
+
+La cobertura contiene los 72 períodos previstos y muestra una ruptura visible durante 2020–2021. Esa discontinuidad es material para cualquier comparación histórica: por eso las métricas posteriores se interpretan por régimen temporal y no como una única serie estable.
+
+## Análisis descriptivo: demanda, estacionalidad y cambios de régimen
+
+```{r}
+monthly |> mutate(month = as.Date(month)) |> ggplot(aes(month, trips, color = regime)) + geom_line() + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes por mes", color = "Régimen", title = "Demanda mensual y cambios de régimen") + theme_minimal()
+```
+
+La serie confirma cambios de nivel persistentes y una ruptura material durante 2020–2021. La separación por régimen organiza la comparación histórica, pero no explica las causas de esos cambios.
+
+```{r}
+hour_weekday |> group_by(hour, weekday_number) |> summarise(trips = sum(trips), .groups = "drop") |> ggplot(aes(hour, factor(weekday_number), fill = trips)) + geom_tile() + scale_fill_viridis_c(labels = label_number()) + labs(x = "Hora", y = "Día de semana (0 = domingo)", fill = "Viajes", title = "Patrón acumulado por hora y día") + theme_minimal()
+```
+
+El mapa de calor resume la estacionalidad semanal promedio. Es útil para describir cuándo se concentra la demanda registrada; no permite inferir disponibilidad de vehículos, tiempos de espera ni demanda no atendida.
+
+## Exploración abierta: patrones habilitados por los datos
+
+Esta sección no parte de una respuesta esperada. Explora concentración espacial, cambios de estabilidad por año, trayectos frecuentes y relaciones entre volumen, distancia, duración, tarifas y propinas. Cada hallazgo se registrará como descripción, asociación, hipótesis o inconcluso; ningún patrón se presentará como explicación causal.
+
+```{r}
+zone_regime |> group_by(pickup_zone, Zone) |> summarise(trips = sum(trips), .groups = "drop") |> slice_max(trips, n = 15) |> ggplot(aes(reorder(Zone, trips), trips)) + geom_col(fill = "#56B4E9") + coord_flip() + scale_y_continuous(labels = label_number()) + labs(x = "Zona de recogida TLC", y = "Viajes acumulados", title = "Concentración de demanda: 15 zonas principales") + theme_minimal()
+```
+
+La demanda está concentrada espacialmente, aunque el ranking acumulado oculta cambios importantes entre períodos. La comparación por régimen que sigue evita convertir esa agregación histórica en una clasificación permanente de zonas.
+
+### Estabilidad entre regímenes
+
+```{r}
+monthly |> mutate(month = as.Date(month)) |> ggplot(aes(month, trips, color = regime)) + geom_line() + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes", color = "Régimen", title = "Volumen mensual y regímenes temporales") + theme_minimal()
+```
+
+Los regímenes separan una dinámica previa a 2020, el período 2020–2021 y la recuperación posterior. El volumen mensual medio documentado es de 7.05 M, 2.31 M y 3.31 M viajes, respectivamente; se trata de una descripción de la fuente, no de una atribución causal.
+
+```{r}
+#| fig-width: 14
+#| fig-height: 7
+#| out-width: "100%"
+zone_regime |>
+  group_by(regime, pickup_zone, Zone, Borough) |>
+  summarise(trips = sum(trips), .groups = "drop") |>
+  group_by(regime) |>
+  slice_max(trips, n = 10, with_ties = FALSE) |>
+  arrange(regime, trips) |>
+  ungroup() |>
+  mutate(zone_panel = reorder(paste(Zone, regime, sep = "___"), trips)) |>
+  ggplot(aes(zone_panel, trips, fill = regime)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~regime, scales = "free_y", nrow = 1) +
+  coord_flip() +
+  scale_x_discrete(labels = function(x) sub("___.*$", "", x)) +
+  scale_y_continuous(
+    labels = label_number(scale_cut = cut_short_scale()),
+    breaks = breaks_pretty(n = 4),
+    expand = expansion(mult = c(0, 0.06))
+  ) +
+  labs(x = "Zona de recogida", y = "Viajes", title = "Zonas líderes por régimen") +
+  theme_minimal(base_size = 10) +
+  theme(
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8),
+    strip.text = element_text(size = 10, face = "bold"),
+    plot.margin = margin(t = 6, r = 10, b = 12, l = 6)
+  )
+```
+
+Las zonas líderes no son estables entre regímenes. Por ejemplo, Upper East Side South lidera antes de 2020 y durante 2020–2021, mientras que JFK Airport lidera en el período posterior a 2021. El hallazgo respalda segmentar los análisis geográficos por período.
+
+### Economía observada y asociaciones
+
+```{r}
+economic |> select(regime, distance_total_correlation, distance_duration_correlation, fare_tip_correlation)
+```
+
+Las correlaciones describen co-movimiento en los registros; no identifican un efecto de distancia, tarifa o propina sobre otro resultado.
+
+```{r}
+payment |> group_by(regime, payment_type) |> summarise(trips = sum(trips), mean_distance = weighted.mean(mean_distance, w = trips), mean_tip = weighted.mean(mean_tip, w = trips), mean_total = weighted.mean(mean_total, w = trips), .groups = "drop") |> arrange(regime, desc(trips))
+```
+
+Los perfiles de pago y las asociaciones económicas cambian entre regímenes. Los importes negativos y extremos se auditan y la sensibilidad acotada está disponible en `reports/economic_sensitivity.csv`; por tanto, ninguna correlación se traduce en una regla de tarifa, incentivo o rentabilidad.
+
+### Rutas y hallazgos no cerrados
+
+```{r}
+routes |> select(regime, pickup_name, dropoff_name, trips) |> arrange(regime, desc(trips)) |> group_by(regime) |> slice_head(n = 10) |> ungroup()
+```
+
+Las rutas frecuentes describen los trayectos observados más comunes dentro de cada régimen. La concentración por zona, rutas y pagos se conserva como exploración descriptiva: no se atribuye a capacidad, conducta de conductores, precios, clima, vuelos ni políticas, variables no observadas en esta fuente.
+
+## Matriz de evidencia y ramas exploradas
+
+```{r}
+evidence
+```
+
+La matriz conserva qué preguntas recibieron evidencia suficiente y cuáles quedan abiertas. Sirve como contrato de alcance para que una etapa posterior no convierta un resultado descriptivo en una recomendación no respaldada.
+
+## Análisis predictivo: evaluación temporal
+
+La predicción sólo se ejecutará tras aprobar los controles anteriores. El candidato inicial es demanda agregada por hora con horizontes de 1 a 24 horas. Se reservará el último 10 % cronológico como prueba final; en el 90 % previo se usarán ventanas expansivas. Las variables admitidas serán calendario conocido y rezagos disponibles al instante de pronóstico.
+
+Se comparan baselines ingenua, estacional diaria y semanal frente a un modelo de rezagos y calendario. Las métricas son RMSE, MAE, WAPE, sesgo y cobertura de intervalos por horizonte. Un candidato sólo se considera apto cuando supera su baseline bajo la misma prueba temporal final.
+
+```{r}
+predictive_gate
+```
+
+Las once series evaluadas quedan en `forecast_candidate_approved`: `lag_calendar` supera las baselines bajo la misma partición temporal. Esto habilita un componente de pronóstico histórico con monitoreo y reentrenamiento; no convierte el modelo en evidencia causal ni en una regla para intervenir sobre precios, flota o incentivos.
+
+```{r}
+predictive_metrics |> filter(horizon %in% c(1, 6, 24)) |> arrange(series, horizon)
+```
+
+La evaluación reserva el último 10% cronológico post-2021 y selecciona las diez zonas sólo dentro del entrenamiento. La partición reproducible es la siguiente:
+
+```{r}
+predictive_partition
+```
+
+La validación sólo respalda el uso predictivo dentro de la población, horizonte y período documentados. Fuera de esos límites, o si se degrada el desempeño, la aplicación debe volver a presentar el resultado como histórico hasta reentrenar y reevaluar el modelo.
+
+## Análisis prescriptivo condicionado
+
+La evidencia disponible no identifica efectos de capacidad, incentivos, precios, flota o intervenciones. En consecuencia, no se recomienda una acción operativa ni se construyen escenarios de intervención. El único resultado prescriptivo defendible es un **no-go**: usar el análisis como diagnóstico histórico y no usarlo para decidir incentivos o capacidad sin datos de oferta, coste y resultado causal.
+
+```{r}
+branch_decisions
+```
+
+Cada rama conserva el criterio necesario para reabrirla. Esto hace explícito que una recomendación operacional requeriría evidencia adicional, no una reinterpretación más fuerte de los mismos registros.
+
+## Hallazgos y conclusiones
+
+```{r}
+#| results: asis
+for (i in seq_len(nrow(findings))) {
+  cat("### ", findings$id[[i]], " — ", findings$dimension[[i]], "\n\n", sep = "")
+  cat("**Tipo de evidencia:** ", findings$evidence_type[[i]], ".  \n", sep = "")
+  cat("**Hallazgo:** ", findings$finding[[i]], "  \n", sep = "")
+  cat("**Resultado:** ", findings$evidence[[i]], "  \n", sep = "")
+  cat("**Límite:** ", findings$limitation[[i]], "  \n", sep = "")
+  cat("**Conclusión:** ", findings$conclusion[[i]], "\n\n", sep = "")
+}
+```
+
+La etapa se cierra como un análisis integral reproducible, descriptivo y diagnóstico, con una rama predictiva temporalmente validada para las once series evaluadas. Esta conclusión delimita exactamente qué preguntas puede responder la fuente y cuáles requieren nuevas variables o un nuevo diseño de datos.
+
+### Conclusión de cierre
+
+El análisis está cerrado para su objetivo: entrega una base histórica trazable de 259,287,888 viajes, cuantifica sus limitaciones, separa los cambios de régimen y valida `lag_calendar` frente a las baselines en once series. La transición a MVP debe preservar este contrato: el producto inicial puede combinar exploración histórica de cobertura, demanda, zonas, rutas, pagos y calidad con pronósticos de corto horizonte claramente etiquetados. No debe ofrecer recomendaciones de flota, tarifas ni incentivos.
+
+## Límites y transición
+
+Estos datos permiten describir viajes registrados y evaluar pronóstico de demanda histórica. No contienen una medición suficiente de oferta, capacidad, costes operativos, incentivos ni efectos causales. Por ello no se harán recomendaciones de precios, flota o incentivos.
+
+El flujo fue ejecutado desde una sesión R limpia, los artefactos se regeneraron y las pruebas automatizadas se validaron antes del cierre. Una decisión posterior sobre MVP debe consumir esta evidencia congelada y no modificar el análisis.
+
+
+```{r}
+data_gaps
+```
+
+La tabla final identifica las variables que harían posible ampliar el alcance en el futuro. Hasta que esas fuentes se incorporen con un diseño de evaluación adecuado, los límites anteriores son parte del resultado, no trabajo pendiente oculto.

@@ -1,0 +1,3 @@
+from_regime,to_regime,top10_in_from,top10_in_to,zones_persisted,persistence_pct,persisted_zones
+pre_2020,2020_2021,10,10,8,80,237|161|236|162|186|132|48|170
+2020_2021,post_2021,10,10,8,80,237|236|161|186|162|142|170|132

@@ -1,0 +1,7 @@
+regime,view,n_trips_in_view,distance_total_correlation,distance_duration_correlation,fare_tip_correlation,acotamiento_rules
+2020_2021,crudo,55550502,6.488830193229126e-4,0.001130567374581143,0.02518145426493335,sin filtros de extremos (solo timestamp en periodo fuente)
+post_2021,crudo,119133430,0.0023875430093116177,5.04446822438262e-5,-0.9999788201333887,sin filtros de extremos (solo timestamp en periodo fuente)
+pre_2020,crudo,84593029,0.03491587385483715,0.04995889944071156,0.5859828590169591,sin filtros de extremos (solo timestamp en periodo fuente)
+2020_2021,acotado,54208419,0.9298418152822923,0.7683258404276565,0.49891269572706304,"distancia [0.01,100]mi; duracion [1,480]min; fare [2.5,300]USD; tip [0,200]USD; total [2.5,500]USD"
+post_2021,acotado,115132904,0.9153982717919295,0.7808354337676758,0.6116807839547659,"distancia [0.01,100]mi; duracion [1,480]min; fare [2.5,300]USD; tip [0,200]USD; total [2.5,500]USD"
+pre_2020,acotado,83154571,0.9311729849158584,0.7749001616186564,0.5587412540150003,"distancia [0.01,100]mi; duracion [1,480]min; fare [2.5,300]USD; tip [0,200]USD; total [2.5,500]USD"

@@ -1,0 +1,2 @@
+model,status,detail
+fable_arima,evaluated_24h_validation_diagnostic_only,Diagnostico parcial: una ventana de 24 h. NO comparable con la validacion completa de baselines y lag_calendar. No se usa para seleccion de modelo final. Para comparacion valida se requiere aplicar ARIMA en la misma validacion expansiva.

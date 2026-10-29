@@ -1,0 +1,4 @@
+split,start_utc,end_utc,n_hours,share_pct,regime,note
+entrenamiento (base),2022-01-01 UTC,2024-02-29 01:00:00 UTC,18938,72,post_2021,Modelo lag reajustado en cada bloque de validacion (ventana expansiva)
+validacion,2024-02-29 02:00:00 UTC,2024-09-13 08:00:00 UTC,4735,18,post_2021,Usado para seleccionar el mejor modelo por serie
+prueba final,2024-09-13 09:00:00 UTC,2024-12-31 23:00:00 UTC,2631,10,post_2021,10% final reservado; no se toca durante seleccion
