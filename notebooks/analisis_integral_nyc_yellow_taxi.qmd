@@ -7,6 +7,10 @@ format:
     toc: true
     toc-location: left
     code-fold: true
+  pdf:
+    toc: true
+    pdf-engine: xelatex
+    geometry: margin=0.75in
 execute:
   freeze: auto
 ---
@@ -17,6 +21,10 @@ execute:
 setwd(normalizePath(".."))
 source("renv/activate.R")
 library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales); library(DBI); library(duckdb)
+if (knitr::is_latex_output()) {
+  options(width = 75, pillar.width = 75)
+  knitr::opts_chunk$set(echo = FALSE)
+}
 quality <- read_csv("reports/data_quality_by_source_month.csv", show_col_types = FALSE)
 monthly <- read_csv("reports/monthly_city_profile.csv", show_col_types = FALSE)
 hour_weekday <- read_csv("reports/hour_weekday_profile.csv", show_col_types = FALSE)
