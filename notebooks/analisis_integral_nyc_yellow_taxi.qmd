@@ -18,8 +18,9 @@ execute:
 ```{r}
 #| label: setup
 #| include: false
-setwd(normalizePath(".."))
-source("renv/activate.R")
+project_dir <- normalizePath("..")
+knitr::opts_knit$set(root.dir = project_dir)
+source(file.path(project_dir, "renv", "activate.R"))
 library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales); library(DBI); library(duckdb)
 if (knitr::is_latex_output()) {
   options(width = 75, pillar.width = 75)
@@ -31,22 +32,23 @@ if (knitr::is_latex_output()) {
     dpi = 220
   )
 }
-quality <- read_csv("reports/data_quality_by_source_month.csv", show_col_types = FALSE)
-monthly <- read_csv("reports/monthly_city_profile.csv", show_col_types = FALSE)
-hour_weekday <- read_csv("reports/hour_weekday_profile.csv", show_col_types = FALSE)
-zone_regime <- read_csv("reports/zone_regime_profile.csv", show_col_types = FALSE)
-routes <- read_csv("reports/top_routes_by_regime.csv", show_col_types = FALSE)
-economic <- read_csv("reports/economic_distribution_by_regime.csv", show_col_types = FALSE)
-payment <- read_csv("reports/payment_profile_by_regime.csv", show_col_types = FALSE)
-evidence <- read_csv("reports/evidence_matrix.csv", show_col_types = FALSE)
-predictive_gate <- read_csv("reports/predictive_gate.csv", show_col_types = FALSE)
-predictive_metrics <- read_csv("reports/predictive_metrics.csv", show_col_types = FALSE)
-findings <- read_csv("reports/findings_register.csv", show_col_types = FALSE)
-branch_decisions <- read_csv("reports/branch_decisions.csv", show_col_types = FALSE)
-data_gaps <- read_csv("reports/data_gaps.csv", show_col_types = FALSE)
-predictive_partition <- read_csv("reports/predictive_partition.csv", show_col_types = FALSE)
+report_path <- function(name) file.path(project_dir, "reports", name)
+quality <- read_csv(report_path("data_quality_by_source_month.csv"), show_col_types = FALSE)
+monthly <- read_csv(report_path("monthly_city_profile.csv"), show_col_types = FALSE)
+hour_weekday <- read_csv(report_path("hour_weekday_profile.csv"), show_col_types = FALSE)
+zone_regime <- read_csv(report_path("zone_regime_profile.csv"), show_col_types = FALSE)
+routes <- read_csv(report_path("top_routes_by_regime.csv"), show_col_types = FALSE)
+economic <- read_csv(report_path("economic_distribution_by_regime.csv"), show_col_types = FALSE)
+payment <- read_csv(report_path("payment_profile_by_regime.csv"), show_col_types = FALSE)
+evidence <- read_csv(report_path("evidence_matrix.csv"), show_col_types = FALSE)
+predictive_gate <- read_csv(report_path("predictive_gate.csv"), show_col_types = FALSE)
+predictive_metrics <- read_csv(report_path("predictive_metrics.csv"), show_col_types = FALSE)
+findings <- read_csv(report_path("findings_register.csv"), show_col_types = FALSE)
+branch_decisions <- read_csv(report_path("branch_decisions.csv"), show_col_types = FALSE)
+data_gaps <- read_csv(report_path("data_gaps.csv"), show_col_types = FALSE)
+predictive_partition <- read_csv(report_path("predictive_partition.csv"), show_col_types = FALSE)
 
-raw_dir <- "data/raw/nyc_tlc_yellow_2019_2024"
+raw_dir <- file.path(project_dir, "data", "raw", "nyc_tlc_yellow_2019_2024")
 manifest <- read_csv(file.path(raw_dir, "manifest.csv"), show_col_types = FALSE)
 discovered_path <- file.path(raw_dir, "manifest_discovered.csv")
 if (file.exists(discovered_path)) manifest <- bind_rows(manifest, read_csv(discovered_path, show_col_types = FALSE))

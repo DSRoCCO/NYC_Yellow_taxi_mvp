@@ -29,6 +29,7 @@ renv/staging/
 # Productos de renderizado y sesiones locales.
 notebooks/*.html
 notebooks/*_files/
+notebooks/_freeze/
 .quarto/
 .Rhistory
 .RData
