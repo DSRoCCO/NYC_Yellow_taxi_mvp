@@ -33,7 +33,7 @@ jobs:
       - name: Restore locked R packages
         run: Rscript -e 'install.packages("renv", repos = "https://cloud.r-project.org"); renv::restore(prompt = FALSE)'
       - name: Render frozen analysis for Pages
-        run: quarto render notebooks/analisis_integral_nyc_yellow_taxi.qmd --to html --output-dir _site
+        run: quarto render notebooks/analisis_integral_nyc_yellow_taxi.qmd --to html --output-dir ../_site
       - name: Add Pages entry point
         run: |
           analysis_file="$(find _site -name 'analisis_integral_nyc_yellow_taxi.html' -type f -print -quit)"
