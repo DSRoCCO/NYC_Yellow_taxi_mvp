@@ -9,7 +9,8 @@ testthat::test_that("el manifiesto contiene la cobertura mensual esperada", {
 
 testthat::test_that("los Parquet crudos estan completos", {
   files <- assert_raw_inputs()
-  testthat::expect_equal(length(files), 72L)
+  testthat::expect_gte(length(files), 72L)
+  testthat::expect_true(all(file.exists(files)))
 })
 
 # ── SHA-256 ───────────────────────────────────────────────────────────────────

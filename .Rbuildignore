@@ -1,0 +1,13 @@
+^renv$
+^renv\.lock$
+^data$
+^artifacts$
+^reports$
+^notebooks$
+^docs$
+^skills$
+^tests$
+^exec$
+^Dockerfile$
+^\.dockerignore$
+^project_spec\.md$

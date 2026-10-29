@@ -1,6 +1,6 @@
 ---
 title: "Análisis integral — NYC Yellow Taxi"
-subtitle: "Viajes Yellow Taxi publicados por NYC TLC, 2019–2024"
+subtitle: "Viajes Yellow Taxi publicados por NYC TLC, 2019–último mes oficial disponible"
 execute-dir: project
 format:
   html:
@@ -16,7 +16,7 @@ execute:
 #| include: false
 setwd(normalizePath(".."))
 source("renv/activate.R")
-library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales)
+library(readr); library(dplyr); library(lubridate); library(ggplot2); library(scales); library(DBI); library(duckdb)
 quality <- read_csv("reports/data_quality_by_source_month.csv", show_col_types = FALSE)
 monthly <- read_csv("reports/monthly_city_profile.csv", show_col_types = FALSE)
 hour_weekday <- read_csv("reports/hour_weekday_profile.csv", show_col_types = FALSE)
@@ -31,15 +31,41 @@ findings <- read_csv("reports/findings_register.csv", show_col_types = FALSE)
 branch_decisions <- read_csv("reports/branch_decisions.csv", show_col_types = FALSE)
 data_gaps <- read_csv("reports/data_gaps.csv", show_col_types = FALSE)
 predictive_partition <- read_csv("reports/predictive_partition.csv", show_col_types = FALSE)
+
+raw_dir <- "data/raw/nyc_tlc_yellow_2019_2024"
+manifest <- read_csv(file.path(raw_dir, "manifest.csv"), show_col_types = FALSE)
+discovered_path <- file.path(raw_dir, "manifest_discovered.csv")
+if (file.exists(discovered_path)) manifest <- bind_rows(manifest, read_csv(discovered_path, show_col_types = FALSE))
+manifest <- manifest |> distinct(period, .keep_all = TRUE) |> arrange(period)
+has_local_parquet <- all(file.exists(file.path(raw_dir, manifest$file)))
+
+if (has_local_parquet) {
+  drv <- duckdb::duckdb()
+  con <- DBI::dbConnect(drv, dbdir = ":memory:")
+  parquet_glob <- gsub("'", "''", normalizePath(file.path(raw_dir, "*.parquet"), mustWork = FALSE), fixed = TRUE)
+  dbExecute(con, sprintf("CREATE VIEW trips AS SELECT * FROM read_parquet('%s', union_by_name = true, filename = true)", parquet_glob))
+  valid_trip <- "tpep_pickup_datetime IS NOT NULL AND strftime(tpep_pickup_datetime, '%Y-%m') = regexp_extract(filename, 'yellow_tripdata_([0-9]{4}-[0-9]{2})', 1)"
+  actual_coverage <- dbGetQuery(con, sprintf("SELECT regexp_extract(filename, 'yellow_tripdata_([0-9]{4}-[0-9]{2})', 1) AS source_period, count(*) AS trips, sum(CASE WHEN NOT (%s) THEN 1 ELSE 0 END) AS timestamp_outside_source_period FROM trips GROUP BY 1 ORDER BY 1", valid_trip))
+  actual_monthly <- dbGetQuery(con, sprintf("SELECT date_trunc('month', tpep_pickup_datetime) AS month, count(*) AS trips FROM trips WHERE %s GROUP BY 1 ORDER BY 1", valid_trip)) |> mutate(month = as.Date(month), regime = case_when(month < as.Date('2020-01-01') ~ 'Pre-2020', month < as.Date('2022-01-01') ~ '2020-2021', TRUE ~ 'Post-2021'))
+  actual_hour_weekday <- dbGetQuery(con, sprintf("SELECT hour(tpep_pickup_datetime) AS hour, dayofweek(tpep_pickup_datetime) AS weekday_number, count(*) AS trips FROM trips WHERE %s GROUP BY 1, 2 ORDER BY 1, 2", valid_trip))
+  analysis_data_mode <- "Parquet locales: actualización descriptiva"
+} else {
+  con <- NULL
+  actual_coverage <- quality |> transmute(source_period, trips, timestamp_outside_source_period)
+  actual_monthly <- monthly |> transmute(month = as.Date(month), trips, regime)
+  actual_hour_weekday <- hour_weekday |> group_by(hour, weekday_number) |> summarise(trips = sum(trips), .groups = "drop")
+  analysis_data_mode <- "Evidencia congelada: CI/GitHub Pages"
+}
+actual_cutoff <- max(actual_monthly$month)
 ```
 
 ## Propósito, alcance y etiqueta de evidencia
 
-Este documento estudia los viajes Yellow Taxi publicados por NYC TLC entre 2019 y 2024. Distingue evidencia **descriptiva**, asociaciones, resultados **predictivos** y escenarios condicionados. No identifica causalidad ni estima el efecto de políticas, conductores, precios o incentivos.
+Este documento estudia los viajes Yellow Taxi publicados por NYC TLC desde 2019 hasta el último mes local disponible. Distingue evidencia **descriptiva**, asociaciones, resultados **predictivos** y escenarios condicionados. No identifica causalidad ni estima el efecto de políticas, conductores, precios o incentivos.
 
-La fuente cruda consta de 72 Parquet mensuales. El manifiesto y las reglas de inmutabilidad se encuentran en `data/raw/nyc_tlc_yellow_2019_2024/`. El informe consume los reportes de evidencia congelada en `reports/`, por lo que no requiere scripts auxiliares ni datos intermedios para renderizarse.
+La fuente cruda combina el manifiesto congelado 2019–2024 con los meses oficiales descubiertos localmente. El manifiesto y las reglas de inmutabilidad se encuentran en `data/raw/nyc_tlc_yellow_2019_2024/`; `manifest_discovered.csv` registra los meses posteriores descargados, su tamaño y SHA-256 local.
 
-El documento consume artefactos previamente generados y validados. Esto separa el análisis de la presentación: no se releen los datos crudos durante la renderización y cada cifra puede rastrearse al script que la produjo.
+El documento calcula la actualización de cobertura y patrones descriptivos directamente desde los Parquet locales. Las tablas de evidencia histórica y la validación predictiva en `reports/` permanecen congeladas para 2019–2024 y 2022–2024, respectivamente, hasta una nueva evaluación formal.
 
 ## Intake, diccionario y trazabilidad
 
@@ -50,27 +76,39 @@ La cobertura se limita a viajes Yellow Taxi publicados, no a todos los desplazam
 ## Análisis diagnóstico: calidad, cobertura y límites de la fuente
 
 ```{r}
+actual_coverage |> summarise(
+  meses_disponibles = n(),
+  primer_periodo = min(source_period),
+  ultimo_periodo = max(source_period),
+  viajes_publicados = sum(trips),
+  timestamps_fuera_de_periodo = sum(timestamp_outside_source_period)
+)
+```
+
+Modo de ejecución: **`r analysis_data_mode`**. El último período disponible para esta ejecución es `r format(actual_cutoff, "%Y-%m")`; cualquier resultado predictivo congelado conserva su ventana de evaluación original hasta ser reentrenado y reevaluado.
+
+```{r}
 quality |> summarise(across(c(trips, missing_pickup, timestamp_outside_source_period, negative_distance, negative_duration, negative_total), sum, na.rm = TRUE))
 ```
 
 La tabla anterior presenta los controles antes de aplicar filtros analíticos. En particular, los registros cuyo timestamp no coincide con el mes declarado por el archivo permanecen contabilizados en la auditoría; se excluyen únicamente de las series temporales para que no desplacen artificialmente la demanda entre períodos.
 
 ```{r}
-ggplot(quality, aes(x = as.Date(paste0(source_period, "-01")), y = trips)) + geom_line(color = "#0072B2") + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes publicados", title = "Cobertura mensual por período fuente") + theme_minimal()
+ggplot(actual_coverage, aes(x = as.Date(paste0(source_period, "-01")), y = trips)) + geom_line(color = "#0072B2") + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes publicados", title = "Cobertura mensual por período fuente — actualización local") + theme_minimal()
 ```
 
-La cobertura contiene los 72 períodos previstos y muestra una ruptura visible durante 2020–2021. Esa discontinuidad es material para cualquier comparación histórica: por eso las métricas posteriores se interpretan por régimen temporal y no como una única serie estable.
+La cobertura muestra la ruptura visible durante 2020–2021 y los meses oficiales incorporados después de 2024. Esa discontinuidad es material para cualquier comparación histórica: por eso las métricas posteriores se interpretan por régimen temporal y no como una única serie estable.
 
 ## Análisis descriptivo: demanda, estacionalidad y cambios de régimen
 
 ```{r}
-monthly |> mutate(month = as.Date(month)) |> ggplot(aes(month, trips, color = regime)) + geom_line() + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes por mes", color = "Régimen", title = "Demanda mensual y cambios de régimen") + theme_minimal()
+actual_monthly |> ggplot(aes(month, trips, color = regime)) + geom_line() + scale_y_continuous(labels = label_number()) + labs(x = NULL, y = "Viajes por mes", color = "Régimen", title = "Demanda mensual y cambios de régimen — actualización local") + theme_minimal()
 ```
 
 La serie confirma cambios de nivel persistentes y una ruptura material durante 2020–2021. La separación por régimen organiza la comparación histórica, pero no explica las causas de esos cambios.
 
 ```{r}
-hour_weekday |> group_by(hour, weekday_number) |> summarise(trips = sum(trips), .groups = "drop") |> ggplot(aes(hour, factor(weekday_number), fill = trips)) + geom_tile() + scale_fill_viridis_c(labels = label_number()) + labs(x = "Hora", y = "Día de semana (0 = domingo)", fill = "Viajes", title = "Patrón acumulado por hora y día") + theme_minimal()
+actual_hour_weekday |> ggplot(aes(hour, factor(weekday_number), fill = trips)) + geom_tile() + scale_fill_viridis_c(labels = label_number()) + labs(x = "Hora", y = "Día de semana (0 = domingo)", fill = "Viajes", title = "Patrón acumulado por hora y día — actualización local") + theme_minimal()
 ```
 
 El mapa de calor resume la estacionalidad semanal promedio. Es útil para describir cuándo se concentra la demanda registrada; no permite inferir disponibilidad de vehículos, tiempos de espera ni demanda no atendida.
@@ -205,11 +243,11 @@ for (i in seq_len(nrow(findings))) {
 }
 ```
 
-La etapa se cierra como un análisis integral reproducible, descriptivo y diagnóstico, con una rama predictiva temporalmente validada para las once series evaluadas. Esta conclusión delimita exactamente qué preguntas puede responder la fuente y cuáles requieren nuevas variables o un nuevo diseño de datos.
+La evidencia congelada se cierra como un análisis integral reproducible, descriptivo y diagnóstico, con una rama predictiva temporalmente validada para las once series evaluadas. La actualización local amplía la cobertura descriptiva hasta `r format(actual_cutoff, "%Y-%m")`, pero no amplía por sí sola la validación predictiva ni convierte el resultado en evidencia causal.
 
 ### Conclusión de cierre
 
-El análisis está cerrado para su objetivo: entrega una base histórica trazable de 259,287,888 viajes, cuantifica sus limitaciones, separa los cambios de régimen y valida `lag_calendar` frente a las baselines en once series. La transición a MVP debe preservar este contrato: el producto inicial puede combinar exploración histórica de cobertura, demanda, zonas, rutas, pagos y calidad con pronósticos de corto horizonte claramente etiquetados. No debe ofrecer recomendaciones de flota, tarifas ni incentivos.
+El análisis congelado entrega una base histórica trazable de 259,287,888 viajes y la actualización local registra `r format(sum(actual_coverage$trips), big.mark = ",")` viajes publicados desde `r min(actual_coverage$source_period)` hasta `r max(actual_coverage$source_period)`. La transición a MVP debe preservar el contrato de validación: puede combinar exploración histórica de cobertura, demanda, zonas, rutas, pagos y calidad con pronósticos de corto horizonte claramente etiquetados. No debe ofrecer recomendaciones de flota, tarifas ni incentivos.
 
 ## Límites y transición
 
@@ -223,3 +261,8 @@ data_gaps
 ```
 
 La tabla final identifica las variables que harían posible ampliar el alcance en el futuro. Hasta que esas fuentes se incorporen con un diseño de evaluación adecuado, los límites anteriores son parte del resultado, no trabajo pendiente oculto.
+
+```{r}
+#| include: false
+if (!is.null(con) && DBI::dbIsValid(con)) DBI::dbDisconnect(con, shutdown = TRUE)
+```

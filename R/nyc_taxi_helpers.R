@@ -14,9 +14,13 @@ raw_dir <- function(root = project_root()) file.path(root, "data", "raw", "nyc_t
 
 assert_raw_inputs <- function(root = project_root()) {
   data_dir <- raw_dir(root)
-  files <- list.files(data_dir, pattern = "^yellow_tripdata_[0-9]{4}-[0-9]{2}\\.parquet$", full.names = TRUE)
-  if (length(files) != 72L) stop("Se esperaban 72 Parquet Yellow Taxi; se encontraron ", length(files), ".")
   if (!file.exists(file.path(data_dir, "manifest.csv"))) stop("Falta manifest.csv.")
+  manifest <- readr::read_csv(file.path(data_dir, "manifest.csv"), show_col_types = FALSE)
+  discovered <- file.path(data_dir, "manifest_discovered.csv")
+  if (file.exists(discovered)) manifest <- dplyr::bind_rows(manifest, readr::read_csv(discovered, show_col_types = FALSE))
+  manifest <- dplyr::distinct(manifest, period, .keep_all = TRUE)
+  files <- file.path(data_dir, manifest$file)
+  if (!all(file.exists(files))) stop("Faltan Parquet Yellow Taxi declarados en el manifiesto combinado.")
   invisible(sort(files))
 }
 

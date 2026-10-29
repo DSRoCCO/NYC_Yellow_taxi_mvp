@@ -1,0 +1,28 @@
+Package: nycyellowtaximvp
+Title: NYC Yellow Taxi Portfolio MVP
+Version: 0.1.0
+Authors@R: person("Rocco", "Data Science", email = "maintainer@example.com", role = c("aut", "cre"))
+Description: Reproducible Shiny portfolio MVP for approved NYC Yellow Taxi evidence.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    bslib,
+    DT,
+    digest,
+    dplyr,
+    ggplot2,
+    golem,
+    htmltools,
+    lubridate,
+    readr,
+    scales,
+    shiny,
+    stats,
+    utils
+Suggests:
+    DBI,
+    duckdb,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)

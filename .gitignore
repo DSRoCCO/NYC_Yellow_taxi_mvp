@@ -2,8 +2,10 @@
 # Se mantienen el manifiesto, el catálogo de zonas y la documentación de la
 # fuente para permitir la descarga y validación reproducibles.
 data/raw/nyc_tlc_yellow_2019_2024/*.parquet
+data/raw/nyc_tlc_yellow_2019_2024/manifest_discovered.csv
 data/interim/
 data/processed/
+artifacts/
 
 # Detalle fila a fila regenerable de la validación predictiva; el repositorio
 # conserva métricas, segmentos, contrato, gate y hallazgos agregados.
@@ -31,6 +33,19 @@ notebooks/*_files/
 .Rhistory
 .RData
 .Ruserdata
+.Rproj.user/
+renv/sandbox/
+
+# Secretos y configuración de ejecución local.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.secret
+
+# Salida estática de GitHub Pages; se publica sólo como artefacto del workflow.
+_site/
 
 # Configuración local de DVC, si se adopta en el futuro.
 .dvc/config.local
